@@ -1,0 +1,32 @@
+import xlrd
+import pickle
+
+book = xlrd.open_workbook("eng_success.xlsx")
+sh = book.sheet_by_index(0)
+
+game = []
+trial = []
+rate = []
+
+for rx in range(1, sh.nrows):
+    if (sh.row(rx)[0].value!="" and sh.row(rx-1)[0].value!=""):
+        if (int(sh.row(rx)[0].value)==0):
+            if (trial != []):
+                game.append(trial)
+                trial = []
+    
+        elif (int(sh.row(rx)[1].value) == int(sh.row(rx-1)[1].value)+1):
+            trial.append(1)
+        elif (int(sh.row(rx)[2].value) == int(sh.row(rx-1)[2].value)+1):
+            trial.append(-1)
+game.append(trial)
+
+del game[0][:7]
+pickle.dump(game,open("eng_game_success.p","wb"))
+
+for dyad in game:
+    first = dyad[:int(0.7*len(dyad))]
+    second = dyad[int(0.7*len(dyad)):]
+    rate.append([first.count(1)/len(first),second.count(1)/len(second),dyad.count(1)/len(dyad)])
+
+#print(rate)
